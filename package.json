@@ -1,0 +1,1 @@
+{"dependencies":{"next":"16.4.0","react":"^19.2.0","react-dom":"^19.2.0"},"description":"H&A Aura — imported jewellery online store (Next.js static export + WooCommerce backend)","name":"hna-aura","private":true,"scripts":{"build":"next build","dev":"next dev","start":"next start"},"version":"1.0.0"}

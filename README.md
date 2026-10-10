@@ -1,55 +1,127 @@
-# H&A Aura — Setup Guide (Roman Urdu)
+# H&A Aura — Online Store (Storefront)
 
-Ye **H&A Aura** online store ka mukammal code hai — Next.js (static export) + WooCommerce backend.
+Premium imported jewellery online store for Pakistan. A headless storefront built with **Next.js (static export)**, powered by a **WordPress + WooCommerce** backend.
 
-## 1) Pehli dafa setup
+**Live preview:** `https://palegoldenrod-fish-444596.hostingersite.com`
 
-```powershell
-# ZIP extract karo, phir us folder mein:
+## Features
+
+- Luxury black / gold / cream design with serif typography
+- Product catalog with categories, search, and filters
+- Variable products (size / colour selectors)
+- Slide-in cart drawer with persistent cart
+- Guest checkout with **Cash on Delivery (COD)**
+- WhatsApp ordering integration (floating button + per-product)
+- Customer reviews (shown after admin moderation)
+- SEO-ready: JSON-LD structured data, sitemap.xml, robots.txt, Open Graph tags, canonical URLs
+- Fully responsive, including a mobile sticky buy bar
+
+## Tech Stack
+
+| Layer    | Technology                                      |
+| -------- | ----------------------------------------------- |
+| Frontend | Next.js 16 (App Router), React, plain CSS       |
+| Backend  | WordPress + WooCommerce (REST API + Store API)  |
+| Hosting  | Hostinger shared hosting (static files only)    |
+| Deploy   | Manual build → upload `out/` via File Manager   |
+
+> Node.js is only needed at **build time**. The hosting serves plain HTML/CSS/JS — no server runtime.
+
+## Prerequisites
+
+- Node.js 18+
+- A WooCommerce store with REST API keys (`Read` permission is enough)
+
+## Getting Started
+
+### 1. Install dependencies
+
+```bash
 npm install
 ```
 
-## 2) `.env.local` banao
+### 2. Configure environment variables
 
-`.env.example` ko copy karke `.env.local` naam do, aur apni asal values dalo:
+Create a file named `.env.local` in the project root:
 
-```powershell
-copy .env.example .env.local
+```bash
+NEXT_PUBLIC_WC_URL=https://your-backend-domain.com
+WC_URL=https://your-backend-domain.com
+WC_KEY=ck_xxxxxxxxxxxxxxxx
+WC_SECRET=cs_xxxxxxxxxxxxxxxx
+NEXT_PUBLIC_SITE_URL=https://your-store-domain.com
 ```
 
-- `WC_KEY` / `WC_SECRET` — tumhari WooCommerce REST API keys (kisi ko mat dena, git mein nahi jayengi)
-- Baqi values pehle se theek hain (temp domain)
+| Variable              | Used for                                              |
+| --------------------- | ----------------------------------------------------- |
+| `NEXT_PUBLIC_WC_URL`  | Store API base URL (browser + build)                  |
+| `WC_URL`              | WooCommerce REST API base URL (build time only)       |
+| `WC_KEY` / `WC_SECRET`| REST API keys (build time only, **never commit**)     |
+| `NEXT_PUBLIC_SITE_URL`| Canonical URLs, sitemap, structured data             |
 
-## 3) Chalao (test)
+> `.env.local` is git-ignored. Never commit API keys.
 
-```powershell
+### 3. Run locally
+
+```bash
 npm run dev
 ```
 
-Browser mein kholo: **http://localhost:3000**
+Open **http://localhost:3000**.
 
-## 4) Production build + deploy
+## Deployment
 
-```powershell
+### Build
+
+```bash
 npm run build
 ```
 
-`out/` folder banega — is ke **andar wali sari files** Hostinger ke `public_html` mein upload karo (File Manager ya FTP se).
+This generates a static `out/` folder with the complete website.
 
-> **Note:** Naya product/category wp-admin mein add ho to site par tabhi dikhega jab dobara `npm run build` + upload ho. (Webhook automation baad mein lagayenge.)
+### Upload
 
-## Project ka khaaka
+Upload **the contents of `out/`** (not the folder itself) to the store domain's document root on Hostinger (File Manager or FTP), overwriting existing files.
 
-- `app/page.js` — Home (server: build par products aate hain)
-- `app/shop/` — Shop + category pages (`/shop/[slug]`)
-- `app/product/[slug]/` — har product ka apna SEO page
-- `app/about|contact|faq|shipping|returns|privacy|terms|checkout/` — baqi pages
-- `components/` — chhote components (har file mein Roman Urdu comments)
-- `components/cart-context.jsx` — cart ka "notice board"
-- `lib/woocommerce.js` — API courier (sirf server par!)
-- `public/` — logo.webp, favicon
+## Updating the Site After Code Changes
 
-## Pages ki list (sitemap mein bhi)
+Every code change follows the same cycle:
 
-`/`, `/shop`, `/shop/[category]`, `/product/[slug]`, `/about`, `/contact`, `/faq`,
-`/shipping`, `/returns`, `/privacy`, `/terms`, `/checkout`
+```
+1. Edit code locally
+2. npm run dev        → test at http://localhost:3000
+3. git add . && git commit -m "..." && git push
+4. npm run build      → fresh out/ folder
+5. Upload out/ contents to hosting (overwrite)
+```
+
+> **Content changes in wp-admin** (new product, price change, new category) also require
+> steps 4–5 — product data is baked into the HTML at build time.
+> Orders do **not** need a rebuild; checkout runs live against the WooCommerce Store API.
+
+## Project Structure
+
+```
+app/
+  page.js                 → Home (products fetched at build time)
+  shop/                   → Shop + category pages (/shop/[slug])
+  product/[slug]/         → Product detail pages (SEO-optimized)
+  checkout/               → Guest COD checkout
+  about|contact|faq|shipping|returns|privacy|terms/ → Info pages
+  sitemap.js / robots.txt → SEO
+components/
+  Storefront.jsx          → Home page sections
+  ProductDetail.jsx       → Gallery, variations, reviews, tabs
+  CheckoutForm.jsx        → COD checkout form + order submission
+  SiteShell.jsx           → Navbar, footer, cart drawer, WhatsApp button
+  cart-context.jsx        → Cart state
+lib/
+  woocommerce.js          → WooCommerce API client (server/build only — never import in browser components)
+public/                   → logo.webp, favicon, static assets
+```
+
+## Notes
+
+- Checkout is **guest-only COD** — no customer login (by client decision).
+- Reviews appear only after approval in wp-admin → Comments.
+- Code comments are in Roman Urdu (team convention); all user-facing text is in English.

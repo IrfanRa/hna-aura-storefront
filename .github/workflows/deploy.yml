@@ -1,0 +1,68 @@
+# ===== H&A Aura — auto build + deploy =====
+# Jab bhi main branch par push ho (ya WordPress se webhook aaye),
+# GitHub khud site build karke Hostinger par upload kar dega.
+
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  # WordPress mein product save hone par Cloudflare relay se ye trigger chalta hai
+  repository_dispatch:
+    types: [wordpress-update]
+  # Haath se test chalane ke liye (Actions tab se)
+  workflow_dispatch:
+
+# Ek waqt mein ek hi deploy — doosra aye to pehle wala mukammal honay ka intezar kare
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # (1) Repo ka code lao
+      - name: Code lao
+        uses: actions/checkout@v4
+
+      # (2) Node.js 20 setup karo
+      - name: Node.js setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # (3) Dependencies install karo
+      - name: Dependencies install
+        run: npm install
+
+      # (4) Production build banao (out/ folder)
+      #     URLs GitHub Secrets se aati hain — code mein nahi hain
+      #     Store API public hai, is liye WC key/secret ki zaroorat nahi
+      - name: Production build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_WC_URL: ${{ secrets.WC_URL }}
+          WC_URL: ${{ secrets.WC_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.SITE_URL }}
+
+      # (5) .htaccess out/ mein dalo — Next.js dotfiles khud copy nahi karta
+      - name: htaccess shamil karo
+        run: cp public/.htaccess out/.htaccess
+
+      # (6) Bani hui site Hostinger par FTP se upload karo
+      #     exclude: api/** — backend (WordPress) ko deploy kabhi na chhue
+      - name: Hostinger par upload (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./out/
+          server-dir: ./public_html/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            api/**
+            api

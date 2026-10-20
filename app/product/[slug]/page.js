@@ -9,7 +9,7 @@ import { stripHtml } from '@/components/format';
 import SiteShell from '@/components/SiteShell';
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://palegoldenrod-fish-444596.hostingersite.com';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://hnaura.com';
 
 // (1) Build ke waqt har product ka page banao
 export async function generateStaticParams() {

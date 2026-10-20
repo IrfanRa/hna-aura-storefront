@@ -60,6 +60,10 @@ export default function Navbar() {
   return (
     <nav className="site-nav">
       <div className="wrap nav-in">
+        {/* (client 2026-10-10) mobile par burger sab se LEFT */}
+        <button className="burger burger-left" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
         <a className="brand" href="/">
           <img src="/logo.webp" alt="H&A Aura logo" />
           <span>
@@ -114,9 +118,6 @@ export default function Navbar() {
           <ThemeToggle />
           <button className="cart-btn" onClick={() => setDrawerOpen(true)} aria-label="Open cart">
             Cart <span className="cart-count">{count}</span>
-          </button>
-          <button className="burger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-            <span></span><span></span><span></span>
           </button>
         </div>
       </div>

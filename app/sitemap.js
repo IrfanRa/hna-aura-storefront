@@ -7,7 +7,7 @@ import { getProducts, getCategories } from '@/lib/woocommerce';
 export const dynamic = 'force-static';
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://palegoldenrod-fish-444596.hostingersite.com';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://hnaura.com';
 
 export default async function sitemap() {
   // (1) Hamesha rehne wale pages (checkout noindex hai — sitemap me nahi)

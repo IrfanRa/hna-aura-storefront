@@ -1,0 +1,15 @@
+# ===== H&A Aura — Next.js static export: clean URLs =====
+# Masla: /shop ya /product/foo (bina .html) 403 deta tha, kyunke
+# Next.js ne .html files ke sath khaali folders bhi banaye hain.
+# Hal: agar .html file mojood hai to bina extension ke URL par wahi serve karo.
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# /product/foo ya /product/foo/ -> /product/foo.html (sirf jab file waqai ho)
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+?)/?$ /$1.html [L]
+</IfModule>
+
+# Directory listing band (security)
+Options -Indexes

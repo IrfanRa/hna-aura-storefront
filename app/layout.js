@@ -4,7 +4,7 @@ import Script from 'next/script'; // (0) theme script ke liye — raw <script> p
 
 // (1) Live site ka URL — sitemap/canonical/OG ke liye (env se, warna temp domain)
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://palegoldenrod-fish-444596.hostingersite.com';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://hnaura.com';
 
 // (2) SEO: default title/meta — har page apna `metadata` export karke override kar sakta hai
 export const metadata = {

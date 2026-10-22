@@ -2,9 +2,9 @@
 import { notFound } from 'next/navigation';
 import SiteShell from '@/components/SiteShell';
 import { getCategories, getCategoryBySlug, getProductsByCategory, getProducts } from '@/lib/woocommerce';
-import ProductCard from '@/components/ProductCard';
+import ProductGrid from '@/components/ProductGrid';
 import PageHero from '@/components/PageHero';
-import { BADGES, stripHtml } from '@/components/format';
+import { stripHtml } from '@/components/format';
 
 // (1) Build ke waqt har category ka page banao
 export async function generateStaticParams() {
@@ -44,17 +44,12 @@ export default async function CategoryPage({ params }) {
           crumbs={[{ label: 'Home', href: '/' }, { label: 'Shop', href: '/shop' }, { label: stripHtml(cat.name) }]}
         />
         <div className="shop-count">{catProducts.length} products</div>
-        <div className="grid" style={{ paddingBottom: 70 }}>
-          {catProducts.map((p, i) => (
-            <a key={p.id} href={`/product/${p.slug}`} style={{ textDecoration: 'none' }}>
-              <ProductCard product={p} badge={BADGES[i % BADGES.length]} delay="" />
-            </a>
-          ))}
-        </div>
-        {catProducts.length === 0 && (
+        {catProducts.length === 0 ? (
           <p style={{ textAlign: 'center', color: 'var(--muted)', paddingBottom: 70 }}>
             New designs are coming soon to this category. ✦
           </p>
+        ) : (
+          <ProductGrid products={catProducts} />
         )}
       </div>
     </SiteShell>

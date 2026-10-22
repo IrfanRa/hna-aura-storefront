@@ -1,8 +1,7 @@
 // ===== Shop — sari products + category chips (SERVER = SEO) =====
 import { getProducts, getCategories } from '@/lib/woocommerce';
-import ProductCard from '@/components/ProductCard';
+import ProductGrid from '@/components/ProductGrid';
 import PageHero from '@/components/PageHero';
-import { BADGES } from '@/components/format';
 import SiteShell from '@/components/SiteShell';
 
 export const metadata = {
@@ -35,18 +34,8 @@ export default async function ShopPage() {
 
       <div className="shop-count">{products.length} products</div>
 
-      {/* (3) Product grid */}
-      <div className="grid" style={{ paddingBottom: 70 }}>
-        {products.map((p, i) => (
-          <a key={p.id} href={`/product/${p.slug}`} style={{ textDecoration: 'none' }}>
-            <ProductCard
-              product={p}
-              badge={BADGES[i % BADGES.length]}
-              delay={i % 4 === 1 ? 'd1' : i % 4 === 2 ? 'd2' : i % 4 === 3 ? 'd3' : ''}
-            />
-          </a>
-        ))}
-      </div>
+      {/* (3) Product grid — Load More ke sath (pehle 20, phir button se aur) */}
+      <ProductGrid products={products} />
     </div>
     </SiteShell>
   );
